@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Favorites</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+</head>
+<body>
+
+<nav>
+    <ul>
+        <li><strong>GameFlix</strong></li>
+    </ul>
+    <ul>
+        <li><a href="/games">Games</a></li>
+        <li><a href="/favorites" class="contrast">Favorites</a></li>
+        <li><a href="/login" onclick="logout()">Logout</a></li>
+    </ul>
+</nav>
+
+<main class="container">
+    <h2>Your Favorites</h2>
+
+    <ul id="favList"></ul>
+</main>
+
+<script>
+    if (!localStorage.getItem("userId")) {
+        window.location.href = "/login";
+    }
+
+    async function loadFavorites() {
+        const userId = localStorage.getItem("userId");
+        const response = await fetch(`/api/favorites/${userId}`);
+        const favorites = await response.json();
+
+        const list = document.getElementById("favList");
+        list.innerHTML = "";
+
+        for (const f of favorites) {
+            const li = document.createElement("li");
+            li.textContent = "Game ID: " + f.gameId;
+            list.appendChild(li);
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem("userId");
+    }
+
+    loadFavorites();
+</script>
+
+</body>
+</html>

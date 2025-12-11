@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+</head>
+<body>
+
+<nav>
+    <ul>
+        <li><strong>GameFlix</strong></li>
+    </ul>
+    <ul>
+        <li><a href="/login" class="contrast">Login</a></li>
+        <li><a href="/register">Register</a></li>
+    </ul>
+</nav>
+
+<main class="container">
+    <h2>Login</h2>
+
+    <form id="loginForm">
+        <label>Username
+            <input id="username" type="text" required>
+        </label>
+
+        <label>Password
+            <input id="password" type="password" required>
+        </label>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <p id="result"></p>
+</main>
+
+<script>
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const response = await fetch("/login", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                username: document.getElementById("username").value,
+                password: document.getElementById("password").value
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.userId) {
+            localStorage.setItem("userId", data.userId);
+            window.location.href = "/games";
+        } else {
+            document.getElementById("result").textContent = data.message;
+        }
+    });
+</script>
+
+</body>
+</html>

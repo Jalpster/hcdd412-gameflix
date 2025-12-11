@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+</head>
+<body>
+
+<nav>
+    <ul>
+        <li><strong>GameFlix</strong></li>
+    </ul>
+    <ul>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/register" class="contrast">Register</a></li>
+    </ul>
+</nav>
+
+<main class="container">
+    <h2>Create Account</h2>
+
+    <form id="registerForm">
+        <label>Username
+            <input id="username" type="text" required>
+        </label>
+
+        <label>Password
+            <input id="password" type="password" required>
+        </label>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <p id="result"></p>
+</main>
+
+<script>
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const response = await fetch("/register", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                username: document.getElementById("username").value,
+                password: document.getElementById("password").value
+            })
+        });
+
+        const data = await response.json();
+        document.getElementById("result").textContent = data.message;
+    });
+</script>
+
+</body>
+</html>

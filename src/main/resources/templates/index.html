@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GameFlix</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+</head>
+<body>
+
+<nav>
+    <ul>
+        <li><strong>GameFlix</strong></li>
+    </ul>
+    <ul id="navLinks">
+        <!-- Filled dynamically -->
+    </ul>
+</nav>
+
+<main class="container">
+    <h1>Welcome to GameFlix</h1>
+    <p>Your personal game library tracker.</p>
+
+    <div id="cta"></div>
+</main>
+
+<script>
+    function renderUI() {
+        const nav = document.getElementById("navLinks");
+        const cta = document.getElementById("cta");
+        const authenticated = localStorage.getItem("userId");
+
+        if (authenticated) {
+            nav.innerHTML = `
+            <li><a href="/games">Games</a></li>
+            <li><a href="/favorites">Favorites</a></li>
+            <li><a href="/login" onclick="logout()">Logout</a></li>
+        `;
+            cta.innerHTML = `
+            <a href="/games"><button>View Games</button></a>
+        `;
+        } else {
+            nav.innerHTML = `
+            <li><a href="/login">Login</a></li>
+            <li><a href="/register">Register</a></li>
+        `;
+            cta.innerHTML = `
+            <a href="/login"><button>Get Started</button></a>
+        `;
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem("userId");
+    }
+
+    renderUI();
+</script>
+
+</body>
+</html>
