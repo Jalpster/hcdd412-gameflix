@@ -1,5 +1,6 @@
 package com.example.hcdd412gameflix.service;
 
+import com.example.hcdd412gameflix.model.User; // Added import
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +32,22 @@ public class UserServiceTest {
     @Transactional
     public void testLoginUser() {
         userService.registerUser("loginUser", "mypassword");
-        String response = userService.loginUser("loginUser", "mypassword");
-        Assertions.assertEquals("Login successful", response);
+
+        // FIXED: Expect User object instead of String
+        User user = userService.loginUser("loginUser", "mypassword");
+
+        Assertions.assertNotNull(user, "User should not be null after successful login");
+        Assertions.assertEquals("loginUser", user.getUsername());
     }
 
     @Test
     @Transactional
     public void testIncorrectLoginUser() {
         userService.registerUser("loginUser", "mypassword");
-        String response = userService.loginUser("loginUser", "myWRONGpassword");
-        Assertions.assertEquals("Invalid username or password", response);
+
+        // FIXED: Expect null instead of error string
+        User user = userService.loginUser("loginUser", "myWRONGpassword");
+
+        Assertions.assertNull(user, "User should be null for invalid password");
     }
 }

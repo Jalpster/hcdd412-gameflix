@@ -23,12 +23,13 @@ public class UserService {
         return "User registered successfully";
     }
 
-    public String loginUser(String username, String password) {
+    // FIXED: Returns User object so the controller can access the ID
+    public User loginUser(String username, String password) {
         User user = userRepository.findByUsername(username).orElse(null);
         if (user == null) {
-            return "Invalid username or password";
+            return null;
         }
         boolean matches = passwordEncoder.matches(password, user.getPassword());
-        return matches ? "Login successful" : "Invalid username or password";
+        return matches ? user : null;
     }
 }
