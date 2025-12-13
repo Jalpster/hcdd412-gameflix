@@ -22,8 +22,9 @@ public class GameServiceTest {
     @Test
     @Transactional
     public void testGetAllGames() {
-        gameRepository.save(new Game("Halo"));
-        gameRepository.save(new Game("Minecraft"));
+        // FIXED: Updated constructor to include description and imageUrl
+        gameRepository.save(new Game("Halo", "Sci-fi shooter", "http://halo.img"));
+        gameRepository.save(new Game("Minecraft", "Block building", "http://mc.img"));
 
         List<Game> games = gameService.getAllGames();
 

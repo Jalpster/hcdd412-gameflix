@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>GameFlix</title>
+    <title>GameFlix - Cloud Gaming</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
 </head>
 <body>
@@ -12,13 +12,12 @@
         <li><strong>GameFlix</strong></li>
     </ul>
     <ul id="navLinks">
-        <!-- Filled dynamically -->
     </ul>
 </nav>
 
 <main class="container">
-    <h1>Welcome to GameFlix</h1>
-    <p>Your personal game library tracker.</p>
+    <h1>Next-Gen Cloud Gaming</h1>
+    <p>Play games instantly on your browser. No downloads, no updates, just gaming.</p>
 
     <div id="cta"></div>
 </main>
@@ -31,12 +30,12 @@
 
         if (authenticated) {
             nav.innerHTML = `
-            <li><a href="/games">Games</a></li>
-            <li><a href="/favorites">Favorites</a></li>
+            <li><a href="/games">Browse Games</a></li>
+            <li><a href="/favorites">My Library</a></li>
             <li><a href="/login" onclick="logout()">Logout</a></li>
         `;
             cta.innerHTML = `
-            <a href="/games"><button>View Games</button></a>
+            <a href="/games"><button>Start Playing</button></a>
         `;
         } else {
             nav.innerHTML = `
@@ -44,7 +43,7 @@
             <li><a href="/register">Register</a></li>
         `;
             cta.innerHTML = `
-            <a href="/login"><button>Get Started</button></a>
+            <a href="/login"><button>Play for Free</button></a>
         `;
         }
     }

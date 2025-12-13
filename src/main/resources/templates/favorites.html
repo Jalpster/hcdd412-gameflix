@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Favorites</title>
+    <title>My Library - GameFlix</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        .game-card { padding: 20px; margin-bottom: 20px; }
+        .game-img { width: 100%; height: 200px; object-fit: cover; margin-bottom: 15px; border-radius: 8px; }
+    </style>
 </head>
 <body>
 
@@ -12,16 +16,15 @@
         <li><strong>GameFlix</strong></li>
     </ul>
     <ul>
-        <li><a href="/games">Games</a></li>
-        <li><a href="/favorites" class="contrast">Favorites</a></li>
+        <li><a href="/games">Browse Games</a></li>
+        <li><a href="/favorites" class="contrast">My Library</a></li>
         <li><a href="/login" onclick="logout()">Logout</a></li>
     </ul>
 </nav>
 
 <main class="container">
-    <h2>Your Favorites</h2>
-
-    <ul id="favList"></ul>
+    <h2>Ready to Play</h2>
+    <div id="favList" class="grid"></div>
 </main>
 
 <script>
@@ -29,26 +32,47 @@
         window.location.href = "/login";
     }
 
-    async function loadFavorites() {
+    async function loadLibrary() {
         const userId = localStorage.getItem("userId");
         const response = await fetch(`/api/favorites/${userId}`);
-        const favorites = await response.json();
+        const games = await response.json();
 
         const list = document.getElementById("favList");
         list.innerHTML = "";
 
-        for (const f of favorites) {
-            const li = document.createElement("li");
-            li.textContent = "Game ID: " + f.gameId;
-            list.appendChild(li);
+        if (games.length === 0) {
+            list.innerHTML = `
+                <article>
+                    <h3>Your library is empty</h3>
+                    <p>Go to the <strong>Browse Games</strong> page to add titles to your cloud library.</p>
+                    <a href="/games" role="button">Browse Games</a>
+                </article>
+            `;
+            return;
         }
+
+        games.forEach(game => {
+            const card = document.createElement("article");
+            card.className = "game-card";
+            card.innerHTML = `
+                <img src="${game.imageUrl}" alt="${game.title}" class="game-img">
+                <h3>${game.title}</h3>
+                <p>${game.description}</p>
+                <button onclick="launchGame('${game.title}')">▶ Launch Game</button>
+            `;
+            list.appendChild(card);
+        });
+    }
+
+    function launchGame(title) {
+        alert("Starting cloud instance for " + title + "...");
     }
 
     function logout() {
         localStorage.removeItem("userId");
     }
 
-    loadFavorites();
+    loadLibrary();
 </script>
 
 </body>

@@ -1,6 +1,6 @@
 package com.example.hcdd412gameflix.controller;
 
-import com.example.hcdd412gameflix.model.Favorite;
+import com.example.hcdd412gameflix.model.Game;
 import com.example.hcdd412gameflix.service.FavoriteService;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,16 +19,18 @@ public class FavoriteController {
 
     @PostMapping("/add")
     public Map<String, String> addFavorite(@RequestBody Map<String, Long> body) {
-        Long userId = body.get("userId");
-        Long gameId = body.get("gameId");
-
-        favService.addFavorite(userId, gameId);
-
+        favService.addFavorite(body.get("userId"), body.get("gameId"));
         return Map.of("message", "Added to favorites");
     }
 
+    @PostMapping("/remove")
+    public Map<String, String> removeFavorite(@RequestBody Map<String, Long> body) {
+        favService.removeFavorite(body.get("userId"), body.get("gameId"));
+        return Map.of("message", "Removed from favorites");
+    }
+
     @GetMapping("/{userId}")
-    public List<Favorite> getFavorites(@PathVariable Long userId) {
-        return favService.getFavorites(userId);
+    public List<Game> getFavorites(@PathVariable Long userId) {
+        return favService.getUserFavorites(userId);
     }
 }

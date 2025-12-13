@@ -2,8 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Games</title>
+    <title>Catalog - GameFlix</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        .game-card { padding: 20px; margin-bottom: 20px; }
+        .game-img { width: 100%; height: 200px; object-fit: cover; margin-bottom: 15px; border-radius: 8px; }
+        .play-btn { width: 100%; margin-top: 10px; }
+    </style>
 </head>
 <body>
 
@@ -12,16 +17,15 @@
         <li><strong>GameFlix</strong></li>
     </ul>
     <ul>
-        <li><a href="/games" class="contrast">Games</a></li>
-        <li><a href="/favorites">Favorites</a></li>
+        <li><a href="/games" class="contrast">Browse Games</a></li>
+        <li><a href="/favorites">My Library</a></li>
         <li><a href="/login" onclick="logout()">Logout</a></li>
     </ul>
 </nav>
 
 <main class="container">
-    <h2>All Games</h2>
-
-    <div id="gamesList"></div>
+    <h2>Available to Stream</h2>
+    <div id="gamesList" class="grid"></div>
 </main>
 
 <script>
@@ -29,7 +33,17 @@
         window.location.href = "/login";
     }
 
+    let libraryIds = new Set();
+
     async function loadGames() {
+        const userId = localStorage.getItem("userId");
+
+        // 1. Fetch User Library (previously favorites)
+        const favResponse = await fetch(`/api/favorites/${userId}`);
+        const favorites = await favResponse.json();
+        libraryIds = new Set(favorites.map(g => g.id));
+
+        // 2. Fetch All Games
         const response = await fetch("/api/games");
         const games = await response.json();
 
@@ -37,30 +51,72 @@
         container.innerHTML = "";
 
         games.forEach(game => {
+            const inLibrary = libraryIds.has(game.id);
+
             const card = document.createElement("article");
+            card.className = "game-card";
             card.innerHTML = `
-            <h3>${game.title}</h3>
-            <button onclick="addFavorite(${game.id})">Add to Favorites</button>
-        `;
+                <img src="${game.imageUrl}" alt="${game.title}" class="game-img">
+                <h3>${game.title}</h3>
+                <p>${game.description}</p>
+
+                <button
+                    id="btn-${game.id}"
+                    class="${inLibrary ? 'secondary' : 'outline'}"
+                    onclick="toggleLibrary(${game.id})">
+                    ${inLibrary ? 'Remove from Library' : '+ Add to Library'}
+                </button>
+
+                <button class="play-btn" onclick="playGame('${game.title}')">
+                    ▶ Play Now
+                </button>
+            `;
             container.appendChild(card);
         });
     }
 
-    async function addFavorite(gameId) {
+    async function toggleLibrary(gameId) {
         const userId = localStorage.getItem("userId");
+        const inLibrary = libraryIds.has(gameId);
 
-        await fetch("/api/favorites/add", {
+        const endpoint = inLibrary ? "/api/favorites/remove" : "/api/favorites/add";
+
+        const response = await fetch(endpoint, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({ userId, gameId })
         });
 
-        alert("Added to favorites!");
+        if (response.ok) {
+            if (inLibrary) {
+                libraryIds.delete(gameId);
+            } else {
+                libraryIds.add(gameId);
+            }
+
+            const btn = document.getElementById(`btn-${gameId}`);
+            if (libraryIds.has(gameId)) {
+                btn.textContent = "Remove from Library";
+                btn.classList.remove("outline");
+                btn.classList.add("secondary");
+            } else {
+                btn.textContent = "+ Add to Library";
+                btn.classList.add("outline");
+                btn.classList.remove("secondary");
+            }
+        } else {
+            alert("Something went wrong.");
+        }
+    }
+
+    function playGame(title) {
+        alert("Launching cloud session for: " + title + "...\n(Connecting to server...)");
     }
 
     function logout() {
         localStorage.removeItem("userId");
     }
+
     loadGames();
 </script>
 
